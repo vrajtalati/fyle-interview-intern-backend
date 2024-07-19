@@ -1,13 +1,30 @@
-FROM python:3.8 
+# Use an official Python runtime as a parent image
+FROM python:3.8
+
+# Set the working directory
+WORKDIR /app
+
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y build-essential
 
-ENV FLASK_APP=core/server.py 
-WORKDIR /app 
-COPY requirements.txt .    
+# Set environment variable for Flask
+ENV FLASK_APP=core/server.py
+
+# Copy the requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .   
-# RUN rm core/store.sqlite3
+
+# Copy the rest of the application code
+COPY . .
+
+# Run database migrations
 RUN flask db upgrade -d core/migrations/
-EXPOSE 7755  
-CMD [ "bash", "run.sh" ]
+
+# Expose the application port
+EXPOSE 7755
+
+# Set the command to run the application
+CMD ["bash", "run.sh"]
