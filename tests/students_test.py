@@ -86,3 +86,40 @@ def test_assignment_resubmit_error(client, h_student_1):
     assert response.status_code == 400
     assert error_response['error'] == 'FyleError'
     assert error_response["message"] == 'only a draft assignment can be submitted'
+
+
+
+def test_edit_assignments_student_1(client, h_student_1):
+    response = client.post(
+        '/student/assignments',
+        headers=h_student_1,
+        json={
+            "id": 5,
+            "content": "some updated text"
+        }
+    )
+
+    assert response.status_code == 200
+    data = response.json["data"]
+    assert data["id"] == 5
+    assert data["student_id"] == 1
+    assert data["state"] == "DRAFT"
+
+
+def test_edit_assignments_cross(client, h_student_2):
+    """
+    failure case : assignment 5 is created by user 1 not user 2
+    """
+    response = client.post(
+        '/student/assignments',
+        headers=h_student_2,
+        json={
+            "id": 5,
+            "content": "some updated text"
+        }
+    )
+
+    assert response.status_code == 403
+    response_error = response.json
+    assert response_error["error"] == "FyleError"
+    assert response_error["message"] == "only student who created assignment can edit"

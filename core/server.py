@@ -1,16 +1,20 @@
 from flask import jsonify
 from marshmallow.exceptions import ValidationError
 from core import app
-from core.apis.assignments import student_assignments_resources, teacher_assignments_resources
+from core.apis.assignments import student_assignments_resources, teacher_assignments_resources, principal_assignments_resources
 from core.libs import helpers
 from core.libs.exceptions import FyleError
 from werkzeug.exceptions import HTTPException
+from core.apis.teachers import principal_teachers_resources
 
 from sqlalchemy.exc import IntegrityError
 
 app.register_blueprint(student_assignments_resources, url_prefix='/student')
 app.register_blueprint(teacher_assignments_resources, url_prefix='/teacher')
-
+#principal assignment
+app.register_blueprint(principal_assignments_resources, url_prefix='/principal/assignments')
+#principal teachers resours
+app.register_blueprint(principal_teachers_resources, url_prefix='/principal/teachers')
 
 @app.route('/')
 def ready():
